@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+/**
+ * @author Tianle Liang  Student Number: 040922323
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
