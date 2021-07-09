@@ -46,6 +46,9 @@ public class ChatRoom extends AppCompatActivity {
         // MyChatAdapter adt, adtSecond ;
         chatList = findViewById(R.id.myrecycler);
 
+        MyOpenHelper opener = new MyOpenHelper( this );
+        ///new added on it
+
 
         // The adapter object is an object that tells the List how to build the items
         chatList.setAdapter(adt = new MyChatAdapter());
