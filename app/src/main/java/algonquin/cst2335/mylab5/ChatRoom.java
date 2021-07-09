@@ -22,6 +22,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * @author Tianle Liang  Student Number: 040922323
+ */
+
 public class ChatRoom extends AppCompatActivity {
     ArrayList<ChatMessage> messages = new ArrayList<>();
     RecyclerView chatList;
@@ -41,6 +45,8 @@ public class ChatRoom extends AppCompatActivity {
         RecyclerView chatList = findViewById(R.id.myrecycler);
         // MyChatAdapter adt, adtSecond ;
         chatList = findViewById(R.id.myrecycler);
+
+        MyOpenHelper opener = new MyOpenHelper( this ); // New Added on
 
         // The adapter object is an object that tells the List how to build the items
         chatList.setAdapter(adt = new MyChatAdapter());
