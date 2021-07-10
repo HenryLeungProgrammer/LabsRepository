@@ -11,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,6 +25,7 @@ import java.util.Locale;
 
 /**
  * @author Tianle Liang  Student Number: 040922323
+ * @date 09-July-2021
  */
 
 public class ChatRoom extends AppCompatActivity {
@@ -138,10 +137,16 @@ public class ChatRoom extends AppCompatActivity {
                  removedMessage = messages.get(position);
                 messages.remove( position);
                 adt.notifyItemRemoved(position);
+
+                db.delete(MyOpenHelper.TABLE_NAME, "_id=?", new String[]{   Long.toString(removedMessage.getID() ) });
+
                 Snackbar.make(messageText, "You deleted message #" + position, Snackbar.LENGTH_LONG)
                 .setAction("Undo", clk -> {
                     messages.add(position, removedMessage);
                     adt.notifyItemInserted(position); // show back
+
+                    db.execSQL("Insert into " + MyOpenHelper.TABLE_NAME + " values( '"+removedMessage.getID() +"'," +
+                            "'"+removedMessage.getMessage()+"','"+ removedMessage.getSendOrReceive()+"','"+removedMessage.getTimeSent()+"');");
                 })    // give an option for Snackbar
                         .show();
              }) // for choice YES

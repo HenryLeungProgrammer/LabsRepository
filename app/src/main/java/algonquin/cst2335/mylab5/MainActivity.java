@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 /**
  * @author Tianle Liang  Student Number: 040922323
+ * @date 09-July-2021
  */
 public class MainActivity extends AppCompatActivity {
 
