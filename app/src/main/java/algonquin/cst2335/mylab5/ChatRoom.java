@@ -1,5 +1,8 @@
 package algonquin.cst2335.mylab5;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +32,10 @@ import java.util.Locale;
 public class ChatRoom extends AppCompatActivity {
     ArrayList<ChatMessage> messages = new ArrayList<>();
     RecyclerView chatList;
-    int MyViewType;
+    int MyViewType = 0;
     MyChatAdapter adt;
     ChatMessage removedMessage;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,22 @@ public class ChatRoom extends AppCompatActivity {
         MyOpenHelper opener = new MyOpenHelper( this );
         ///new added on it
 
+        db = opener.getWritableDatabase();
+        db.rawQuery("Select * from " + MyOpenHelper.TABLE_NAME + ";", null);
+        Cursor results = db.rawQuery("Select * from " + MyOpenHelper.TABLE_NAME + ";", null);
+
+        int _idCol = results.getColumnIndex("_id");
+        int messageCol = results.getColumnIndex( MyOpenHelper.col_message );
+        int sendCol = results.getColumnIndex( MyOpenHelper.col_send_receive );
+        int timeCol = results.getColumnIndex( MyOpenHelper.col_time_sent );
+        results.moveToNext();
+        while(results.moveToNext()) {
+            long id = results.getInt(_idCol);
+            String message = results.getString(messageCol);
+            String time = results.getString(timeCol);
+            int sendOrReceive = results.getInt(sendCol);
+            messages.add(new ChatMessage(message, sendOrReceive, time, id));
+        }
 
         // The adapter object is an object that tells the List how to build the items
         chatList.setAdapter(adt = new MyChatAdapter());
@@ -66,6 +86,13 @@ public class ChatRoom extends AppCompatActivity {
                     messageType.setText("");//clear the edittext
         adt.notifyItemInserted( messages.size() - 1 ); // insert the new row
                     MyViewType = 1;
+
+                    ContentValues newRow = new ContentValues();
+                    newRow.put(MyOpenHelper.col_message, nextMessage.getMessage());
+                    newRow.put(MyOpenHelper.col_send_receive, nextMessage.getSendOrReceive());
+                    newRow.put(MyOpenHelper.col_time_sent, nextMessage.getTimeSent());
+                    long newID = db.insert(MyOpenHelper.TABLE_NAME, MyOpenHelper.col_message, newRow );
+                    nextMessage.setID(newID);
                 }
                 );
         RC.setOnClickListener( click ->
@@ -76,8 +103,14 @@ public class ChatRoom extends AppCompatActivity {
                     messageType.setText("");//clear the edittext
                     adt.notifyItemInserted( messages.size() - 1 ); // insert the new row
                     MyViewType = 2;
-                }
 
+                    ContentValues newRow = new ContentValues();
+                    newRow.put(MyOpenHelper.col_message, nextMessage.getMessage());
+                    newRow.put(MyOpenHelper.col_send_receive, nextMessage.getSendOrReceive());
+                    newRow.put(MyOpenHelper.col_time_sent, nextMessage.getTimeSent());
+                    long newID = db.insert(MyOpenHelper.TABLE_NAME, MyOpenHelper.col_message, newRow );
+                    nextMessage.setID(newID);
+                }
         );
 
        // ChatMessage thisMessage = new ChatMessage(  );
@@ -135,7 +168,9 @@ public class ChatRoom extends AppCompatActivity {
                  View loadedRow = inflater.inflate(layoutID, parent, false);
                  MyViewType = 0;
                  return new MyRowViews(loadedRow);
-             } else{
+             }
+
+             else{
                  layoutID = R.layout.receive_message;
                  View loadedRow = inflater.inflate(layoutID, parent, false);
                  MyViewType = 0;
@@ -144,7 +179,6 @@ public class ChatRoom extends AppCompatActivity {
              //return new MyRowViews(getLayoutInflater().inflate(R.layout.sent_message,parent,false));
                //return new MyRowViews(loadedRow);
          }
-
 
         @Override
         public void onBindViewHolder(MyRowViews holder, int position) {
@@ -167,11 +201,19 @@ public class ChatRoom extends AppCompatActivity {
         String message;
         int sendOrReceive;
         Date timeSent;
+        long id;
+        String timeSent2;
 
          public ChatMessage(String message) { //, int sendOrReceive, Date timeSent
              this.message = message;
+         }
+
+         public ChatMessage(String message, int sendOrReceive, String timeSent, long id){
+             this.message = message;
              this.sendOrReceive = sendOrReceive;
-             this.timeSent = timeSent;
+             this.timeSent2 = timeSent;
+             setID(id);
+
          }
 
          public String getMessage() {
@@ -192,7 +234,10 @@ public class ChatRoom extends AppCompatActivity {
          public void setSendOrReceive(int sendOrReceive) {
              this.sendOrReceive = sendOrReceive;
          }
-     }
+
+         public void setID( long l ){ id=l; }
+         public long getID() {  return id; }
+    }
 
 
 }
