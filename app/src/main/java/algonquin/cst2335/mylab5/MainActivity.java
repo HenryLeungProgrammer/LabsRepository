@@ -8,11 +8,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// new classes stuff
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 
 /**
  * @author Tianle Liang
- * @Student Number: Tianle Liang
- * @Date 15-July-2021
+ * @student Number: 040922323
+ * @Date 23-July-2021
  * @version : 1.0
 */
 public class MainActivity extends AppCompatActivity {
@@ -24,39 +43,73 @@ public class MainActivity extends AppCompatActivity {
     /** This is Hello world TextView */
     TextView tv;
 
-    boolean foundUpperCase, foundLowerCase, foundNumber, foundSpecial;
 
+    boolean foundUpperCase, foundLowerCase, foundNumber, foundSpecial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        et = findViewById(R.id.editText);
-        tv = findViewById(R.id.textView);
-        btn = findViewById(R.id.button);
+        et = findViewById(R.id.editText); // editText
+        tv = findViewById(R.id.textView); // textView
+        btn = findViewById(R.id.button); // button
         foundUpperCase = foundLowerCase = foundNumber = foundSpecial = false;
-
 
         btn.setOnClickListener( click -> { // button control
 
-            /**
-             * @words words holds what were typed from the keyboard
-             */
-            String words = et.getText().toString();
+            // in red because throwing exception
 
-         /*   if(aFunction(words)){
-                tv.setText("I found ABC in your text");
-            }
-            else
-                tv.setText("No ABC found");*/
+                Executor newThread = Executors.newSingleThreadExecutor();
+                newThread.execute( ()-> {
 
-            if(checkPasswordComplexity( words )){
-                tv.setText( "Your password meets all the requirement" );
-                }
-            else//(!checkPasswordComplexity( words )){
-                tv.setText( "You shall not pass! Please change another password" ); // }
+                    URL url = null;  // connect to the server
+
+                    try{
+                        String serverURL = "https://api.openweathermap.org/data/2.5/weather?q="
+                                + URLEncoder.encode(et.getText().toString(), "UTF-8")  // whatever typed into EditText
+                                + "&appid=7e943c97096a9784391a981c4d878b22&Units=Metric";
+
+                        url = new URL(serverURL);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                        // This converts to a String
+                        String text = (new BufferedReader(
+                                new InputStreamReader(in, StandardCharsets.UTF_8)))
+                                .lines()
+                                .collect(Collectors.joining("\n"));
+                        JSONObject theDocument = new JSONObject( text ); //this converts the String to JSON Object.
+                        JSONObject coord =  theDocument.getJSONObject("coord");
+                        double lat = coord.getDouble("lat");
+                        double lon = coord.getDouble("lon");
+
+                        String base = theDocument.getString("base");
+                        theDocument.getInt("visibility");
+
+                        //For the Array
+                        JSONArray weatherArray = theDocument.getJSONArray("weather");
+                        JSONObject object0 = weatherArray.getJSONObject(0);
+                        JSONObject main = theDocument.getJSONObject("main");
+                        double currentTemp = main.getDouble("temp");
+                        double min = main.getDouble("temp_min");
+                        double max = main.getDouble("temp_max");
+
+
+
+                    } // try
+
+                    catch (MalformedURLException e) { // two exceptions could be combined together using ||
+                        e.printStackTrace();
+                    }
+
+                    catch (IOException | JSONException ex) {
+                        ex.printStackTrace();
+                    }
+
+                } ); // runnable, run() function, run on different cpu
+
         });
+
     }
 
 
