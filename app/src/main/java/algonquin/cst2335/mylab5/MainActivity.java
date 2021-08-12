@@ -1,19 +1,21 @@
 package algonquin.cst2335.mylab5;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 // new classes stuff
 import org.json.JSONArray;
@@ -23,19 +25,17 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
 
 
 /**
@@ -49,11 +49,78 @@ public class MainActivity extends AppCompatActivity {
     String text;
     Double currentTemp, maxTemp, minTemp, humidi;
     String description;
+    float oldSize= 14;
+    String locationCity;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_actions, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        TextView currentTemp = findViewById(R.id.temp);
+        TextView maxTemp = findViewById(R.id.maxTemp);
+        TextView miniTemp = findViewById(R.id.minTemp);
+        TextView humi = findViewById(R.id.humitidy);
+        TextView description = findViewById(R.id.description);
+        ImageView icon = findViewById(R.id.icon);
+        TextView location= findViewById(R.id.location);
+        EditText ed = findViewById(R.id.editText);
+
+        switch(item.getItemId())
+        {
+            case R.id.clear:
+                currentTemp.setVisibility(View.INVISIBLE);
+                maxTemp.setVisibility(View.INVISIBLE);
+                miniTemp.setVisibility(View.INVISIBLE);
+                humi.setVisibility(View.INVISIBLE);
+                description.setVisibility(View.INVISIBLE);
+                icon.setVisibility(View.INVISIBLE);
+                location.setVisibility(View.INVISIBLE);
+                ed.setText("");
+                break;
+
+            case R.id.id_increase:
+                oldSize++;
+                currentTemp.setTextSize(oldSize);
+                maxTemp.setTextSize(oldSize);
+                miniTemp.setTextSize(oldSize);
+                humi.setTextSize(oldSize);
+                description.setTextSize(oldSize);
+                location.setTextSize(oldSize);
+                break;
+
+            case R.id.id_decrease:
+                oldSize = Float.max(oldSize-1,5);
+                currentTemp.setTextSize(oldSize);
+                maxTemp.setTextSize(oldSize);
+                miniTemp.setTextSize(oldSize);
+                humi.setTextSize(oldSize);
+                description.setTextSize(oldSize);
+                location.setTextSize(oldSize);
+                break;
+
+
+            case 25:
+                String city = item.getTitle().toString();
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
 
         EditText et= findViewById(R.id.editText); // editText
         TextView tv = findViewById(R.id.textView); // textView
@@ -91,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                         maxTemp = main.getDouble("temp_max");
                         minTemp = main.getDouble("temp_min");
                         humidi = main.getDouble("humidity");
-                        String locationCity = et.getText().toString();
+                        locationCity = et.getText().toString();
                         JSONObject sys = theDocument.getJSONObject("sys");
                         String locationCountry = sys.getString("country");
 
@@ -118,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread( (  )  -> {
 
                             TextView tv2 = findViewById(R.id.temp);
+                            tv2 = findViewById(R.id.temp);
                             tv2.setText("The current temperature is: "  +  currentTemp );
                             tv2.setVisibility(View.VISIBLE);
 
@@ -151,9 +219,10 @@ public class MainActivity extends AppCompatActivity {
                 } ); // runnable, run() function, run on different cpu
 
 
-
         });
 
     }
+
+
 
 }
