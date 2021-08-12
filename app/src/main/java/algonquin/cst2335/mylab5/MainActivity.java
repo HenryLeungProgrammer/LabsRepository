@@ -2,9 +2,16 @@ package algonquin.cst2335.mylab5;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +22,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,71 +46,103 @@ import java.util.stream.Collectors;
 */
 public class MainActivity extends AppCompatActivity {
 
-    /** Here is the login button */
-    Button btn;
-    /** This holds the texts from keyboards showing middle of screen */
-    EditText et;
-    /** This is Hello world TextView */
-    TextView tv;
-
-
-    boolean foundUpperCase, foundLowerCase, foundNumber, foundSpecial;
+    String text;
+    Double currentTemp, maxTemp, minTemp, humidi;
+    String description;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        et = findViewById(R.id.editText); // editText
-        tv = findViewById(R.id.textView); // textView
-        btn = findViewById(R.id.button); // button
-        foundUpperCase = foundLowerCase = foundNumber = foundSpecial = false;
+        EditText et= findViewById(R.id.editText); // editText
+        TextView tv = findViewById(R.id.textView); // textView
+        Button btn = findViewById(R.id.button); // button
 
         btn.setOnClickListener( click -> { // button control
 
             // in red because throwing exception
-
                 Executor newThread = Executors.newSingleThreadExecutor();
                 newThread.execute( ()-> {
 
-                    URL url = null;  // connect to the server
-
                     try{
+                        String cityName = et.getText().toString();
                         String serverURL = "https://api.openweathermap.org/data/2.5/weather?q="
-                                + URLEncoder.encode(et.getText().toString(), "UTF-8")  // whatever typed into EditText
-                                + "&appid=7e943c97096a9784391a981c4d878b22&Units=Metric";
+                                + URLEncoder.encode(cityName, "UTF-8")  // whatever typed into EditText
+                                + "&appid=7e943c97096a9784391a981c4d878b22&units=metric";
 
-                        url = new URL(serverURL);
+
+                    URL url = new URL(serverURL);
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                         // This converts to a String
-                        String text = (new BufferedReader(
+                        text = (new BufferedReader(
                                 new InputStreamReader(in, StandardCharsets.UTF_8)))
                                 .lines()
                                 .collect(Collectors.joining("\n"));
-                        JSONObject theDocument = new JSONObject( text ); //this converts the String to JSON Object.
-                        JSONObject coord =  theDocument.getJSONObject("coord");
-                        double lat = coord.getDouble("lat");
-                        double lon = coord.getDouble("lon");
-
-                        String base = theDocument.getString("base");
-                        theDocument.getInt("visibility");
-
-                        //For the Array
-                        JSONArray weatherArray = theDocument.getJSONArray("weather");
-                        JSONObject object0 = weatherArray.getJSONObject(0);
+                        JSONObject theDocument = new JSONObject( text ); //this converts the String to JSON Object. The whole page!!
                         JSONObject main = theDocument.getJSONObject("main");
-                        double currentTemp = main.getDouble("temp");
-                        double min = main.getDouble("temp_min");
-                        double max = main.getDouble("temp_max");
+                        JSONArray weatherArray = theDocument.getJSONArray("weather");
+                        JSONObject position0 = weatherArray.getJSONObject(0);
+                        description = position0.getString("description");
+                        String iconName = position0.getString("icon");
 
+                        currentTemp = main.getDouble("temp");
+                        maxTemp = main.getDouble("temp_max");
+                        minTemp = main.getDouble("temp_min");
+                        humidi = main.getDouble("humidity");
+                        String locationCity = et.getText().toString();
+                        JSONObject sys = theDocument.getJSONObject("sys");
+                        String locationCountry = sys.getString("country");
 
+                        Bitmap image;
+                        File file = new File(getFilesDir(), iconName + ".png");
+                        if(file.exists()){
+                            image = BitmapFactory.decodeFile(getFilesDir() + "/" + iconName + ".png");
+                        }
+                        else {
+                           URL imgUrl = new URL("https://openweathermap.org/img/w/" + iconName + ".png");
+                            HttpURLConnection connection = (HttpURLConnection) imgUrl.openConnection();
+                            connection.connect();
+                            int responseCode = connection.getResponseCode();
+                            if (responseCode == 200) {
+                                image = BitmapFactory.decodeStream(connection.getInputStream());
+                                image.compress(Bitmap.CompressFormat.PNG, 100, openFileOutput(iconName + ".png", Activity.MODE_PRIVATE));
+                                runOnUiThread( (  )  -> {
+                                ImageView iv = findViewById(R.id.icon);
+                                iv.setImageBitmap(image);
+                                iv.setVisibility(View.VISIBLE); });
+                            }
+                        }
+
+                        runOnUiThread( (  )  -> {
+
+                            TextView tv2 = findViewById(R.id.temp);
+                            tv2.setText("The current temperature is: "  +  currentTemp );
+                            tv2.setVisibility(View.VISIBLE);
+
+                            tv2 = findViewById(R.id.maxTemp);
+                            tv2.setText("The Max temperature is: "  +  maxTemp );
+                            tv2.setVisibility(View.VISIBLE);
+
+                            tv2 = findViewById(R.id.minTemp);
+                            tv2.setText("The Min temperature is: "  + minTemp );
+                            tv2.setVisibility(View.VISIBLE);
+
+                            tv2 = findViewById(R.id.humitidy);
+                            tv2.setText("The humidity: "  +  humidi + "%");
+                            tv2.setVisibility(View.VISIBLE);
+
+                            tv2 = findViewById(R.id.description);
+                            tv2.setText(description );
+                            tv2.setVisibility(View.VISIBLE);
+
+                            tv2 = findViewById(R.id.location);
+                            tv2.setText(locationCity + " ," +  locationCountry);
+                            tv2.setVisibility(View.VISIBLE);
+                        });
 
                     } // try
-
-                    catch (MalformedURLException e) { // two exceptions could be combined together using ||
-                        e.printStackTrace();
-                    }
 
                     catch (IOException | JSONException ex) {
                         ex.printStackTrace();
@@ -108,92 +150,10 @@ public class MainActivity extends AppCompatActivity {
 
                 } ); // runnable, run() function, run on different cpu
 
+
+
         });
 
     }
 
-
-    /**
-     * This function checks if the ABC contained
-     * @return true if contains ABC
-     */
-    private boolean aFunction(String pw){
-        return pw.contains("ABC"); // case sensitive
-    }
-
-    /**
-     * This function checks if the Uppercase letter contained
-     * @return true if it does contain
-     */
-    private boolean isUpperCase(char c){
-        return Character.isUpperCase(c);
-    }
-
-    /**
-     * This function checks if the Lowercase letter contained
-     * @return true if it does contain
-     */
-    private boolean isLowerCase(char c){
-        return Character.isLowerCase(c);
-    }
-
-    /**
-     * This function checks if the number contained
-     * @return true if it does contain
-     */
-    private boolean isDigit(char c){
-        return Character.isDigit(c);
-    }
-
-    /**
-     * This function checks if special character contained
-     * @return true if it does contain
-     */
-    private boolean isSpecialCharacter( char c ){
-
-        switch(c){
-            case '#':
-            case '?':
-            case '*':
-            case '$':
-            case '%':
-            case '^':
-            case '&':
-            case '!':
-            case '@':
-                return true;
-            default:
-                return false;
-        }
-
-    }
-
-    /**
-     * This function checks whether the password meet all requirements
-     * @return true if it is acceptable
-     */
-    private boolean checkPasswordComplexity(String pw){
-        boolean isRight;
-
-        for(int i =0; i< pw.length(); i++){
-
-            if(isUpperCase( pw.charAt(i) )){
-                foundUpperCase = true; }
-
-            else if(isLowerCase(pw.charAt(i))){
-                foundLowerCase = true; }
-
-            else if(isDigit(pw.charAt(i))){
-                foundNumber = true;}
-
-            else //(isSpecialCharacter(pw.charAt(i)))
-            {
-                foundSpecial = true;  }
-        }
-
-        isRight = foundUpperCase && foundLowerCase && foundNumber && foundSpecial ;
-
-        if(isRight == true){ Toast.makeText(MainActivity.this, "Your password is perfect!", Toast.LENGTH_LONG).show();}
-        return isRight;
-    }
 }
