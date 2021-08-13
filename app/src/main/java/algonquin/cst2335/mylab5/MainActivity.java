@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-// new classes stuff
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -26,16 +25,31 @@ import java.net.URLEncoder;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-
 /**
+ * Final Project in Summer Term 2021.
+ *
  * @author Tianle Liang
- * @student Number: 040922323
- * @Date 23-July-2021
  * @version : 1.0
-*/
+ * @student Number : 040922323
+ * @Date 10 -August-2021
+ */
 public class MainActivity extends AppCompatActivity {
 
 
+    /**
+     * @param title, the name of movie
+     * @param year, the year movie produced
+     * @param rating, rating score of this movie
+     * @param runtime, the time of movie
+     * @param mainActors, main actors in this movie
+     * @param plot, the story of this movie
+     * @param URLofPoster, movie poster URL
+     * @param detailButton, the button for movie detail information
+     * @param shopButton, the button for shop button
+     * @param writer, the writers of the movie
+     * @param country, the country where movie produced
+     * @param director, movie director
+     */
     String title, year, rating, runtime, mainActors, plot, URLofPoster;
     Button detailButton, shopButton;
     String writer, country, director;
@@ -43,27 +57,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); // load activity_main layout
 
-        EditText et= findViewById(R.id.editText); // editText
-        TextView tv = findViewById(R.id.textView); // textView
-        Button btn = findViewById(R.id.button); // button
+        EditText et= findViewById(R.id.editText); // editText in layout
+        TextView tv = findViewById(R.id.textView); // textView in layout, content entered from keyboard
+        Button btn = findViewById(R.id.button); // search button
 
         btn.setOnClickListener( click -> { // button control
 
             // in red because throwing exception
-                Executor newThread = Executors.newSingleThreadExecutor();
+                Executor newThread = Executors.newSingleThreadExecutor(); // new Thread to compile
 
                 newThread.execute( ()-> {
 
                     try{
-                        String movieName = et.getText().toString();
-                        String serverURL = "http://www.omdbapi.com/?apikey=6c9862c2&r=xml&t="
+                        String movieName = et.getText().toString(); // get the movie name
+                        String serverURL = "http://www.omdbapi.com/?apikey=6c9862c2&r=xml&t="  // UML of the movie website
                                 + URLEncoder.encode(movieName, "UTF-8");  // whatever typed into EditText
 
-                    URL url = new URL(serverURL);
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    URL url = new URL(serverURL); // url Object
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection(); // connect Internet
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream()); // connect
 
                         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                         //ignore namespace
@@ -74,30 +88,30 @@ public class MainActivity extends AppCompatActivity {
                         xpp.setInput( in  , "UTF-8"); //one element a time
 
                         //move xpp to first element
-                        while(xpp.next() != XmlPullParser.END_DOCUMENT)
+                        while(xpp.next() != XmlPullParser.END_DOCUMENT) // scanner XML content
                         {
-                            switch(xpp.getEventType()){
+                            switch(xpp.getEventType()){ // event type
                                 case     XmlPullParser.START_DOCUMENT:
                                 break;
                                 case     XmlPullParser.END_DOCUMENT:
                                 break;
                                 case     XmlPullParser.START_TAG:
-                                //look for temperature  "temperature"
-                               if(xpp.getName().equals("movie"))  // which opening tag are we looking at?!
+
+                               if(xpp.getName().equals("movie"))  // which opening tag is looking at
                                {
                                    title = xpp.getAttributeValue(null, "title"); // always String
-                                   year = xpp.getAttributeValue(null, "year");
-                                   rating = xpp.getAttributeValue(null, "imdbRating");
-                                   runtime = xpp.getAttributeValue(null, "runtime");
-                                   mainActors = xpp.getAttributeValue(null, "actors");
-                                   plot = xpp.getAttributeValue(null, "plot");
-                                   URLofPoster = xpp.getAttributeValue(null, "poster");
-                                   country = xpp.getAttributeValue(null, "country");
-                                   writer = xpp.getAttributeValue(null, "writer");
-                                   director = xpp.getAttributeValue(null, "director");
+                                   year = xpp.getAttributeValue(null, "year");  // get year from XML content
+                                   rating = xpp.getAttributeValue(null, "imdbRating"); // get rating from XML content
+                                   runtime = xpp.getAttributeValue(null, "runtime"); // get runtime from XML content
+                                   mainActors = xpp.getAttributeValue(null, "actors"); // get actors from XML content
+                                   plot = xpp.getAttributeValue(null, "plot"); // get plot from XML content
+                                   URLofPoster = xpp.getAttributeValue(null, "poster"); // get URL from XML content
+                                   country = xpp.getAttributeValue(null, "country"); // get country name from XML content
+                                   writer = xpp.getAttributeValue(null, "writer"); // get writer from XML content
+                                   director = xpp.getAttributeValue(null, "director"); // get director from XML content
 
                                }
-                               else if(xpp.getName().equals("weather")){
+                               else if(xpp.getName().equals(" ")){ // for other content except "movie"
 
                                }
                                break;
@@ -112,9 +126,9 @@ public class MainActivity extends AppCompatActivity {
 
                         runOnUiThread( (  )  -> {
                             TextView tv2 = findViewById(R.id.movieTitle);
-                            tv2 = findViewById(R.id.movieTitle);
-                            tv2.setText("Title: "  +  title );
-                            tv2.setVisibility(View.VISIBLE);
+                            tv2 = findViewById(R.id.movieTitle); // locate movieTitle TextView in layout
+                            tv2.setText("Title: "  +  title );  // pass the title value to layout
+                            tv2.setVisibility(View.VISIBLE);   // set it visible when user clicked the search button
 
                             tv2 = findViewById(R.id.year);
                             tv2.setText("Year: "  +  year );
@@ -145,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
                     } // try
 
-                    catch (IOException | XmlPullParserException ex) {
+                    catch (IOException | XmlPullParserException ex) { // catch the exception
                         ex.printStackTrace();
                     }
 
@@ -153,24 +167,24 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        Toast.makeText(getApplicationContext(), "Welcome!",
+        Toast.makeText(getApplicationContext(), "Welcome!",  // make toast notification when user open the app
                 Toast.LENGTH_SHORT).show();
-        detailButton = findViewById(R.id.detailButton);
-        detailButton.setOnClickListener( click -> {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-            dialog.setTitle("Other Details");
-            //dialog.setIcon(R.drawable.dictation2_64);
-            dialog.setMessage("\n" + "Country: " + country + "\n\n" + "Director: " + director + "\n\n" + "Writer: " + writer);
+        detailButton = findViewById(R.id.detailButton);  // locate the detail button
+        detailButton.setOnClickListener( click -> {  // when user clicked the detail button
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this); // create a AlertDialog Object
+            dialog.setTitle("Other Details");   // the title of AlertDialog Box
+            //dialog.setIcon(R.drawable.dictation2_64);  // set icon for AlertDialog Box
+            dialog.setMessage("\n" + "Country: " + country + "\n\n" + "Director: " + director + "\n\n" + "Writer: " + writer); // show information
 
             dialog.setCancelable(true); // whether could be cancel
 
-            dialog.show();
+            dialog.show(); // show out
 
         });
 
-        shopButton = findViewById(R.id.shopButton);
-        shopButton.setOnClickListener( click -> {
-            setContentView(R.layout.fragment_layout);
+        shopButton = findViewById(R.id.shopButton); // locate the shop button in layout file
+        shopButton.setOnClickListener( click -> {  // when user clicked the shop button
+            setContentView(R.layout.fragment_layout); // turn to the other page
         });
 
     }
