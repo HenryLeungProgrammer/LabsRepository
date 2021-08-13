@@ -149,4 +149,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/shopButton"
+        android:layout_width="143dp"
+        android:layout_height="48dp"
+        android:text="Buy Ticket"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

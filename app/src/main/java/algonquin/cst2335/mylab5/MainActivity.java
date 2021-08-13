@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     String title, year, rating, runtime, mainActors, plot, URLofPoster;
-    Button detailButton;
+    Button detailButton, shopButton;
     String writer, country, director;
 
     @Override
@@ -162,12 +162,15 @@ public class MainActivity extends AppCompatActivity {
             //dialog.setIcon(R.drawable.dictation2_64);
             dialog.setMessage("\n" + "Country: " + country + "\n\n" + "Director: " + director + "\n\n" + "Writer: " + writer);
 
-            // (3)设置dialog可否被取消
-            dialog.setCancelable(true);
+            dialog.setCancelable(true); // whether could be cancel
 
-            // (4)显示出来
             dialog.show();
 
+        });
+
+        shopButton = findViewById(R.id.shopButton);
+        shopButton.setOnClickListener( click -> {
+            setContentView(R.layout.fragment_layout);
         });
 
     }
