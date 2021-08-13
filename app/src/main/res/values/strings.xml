@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Search Engine</string>
+    <string name="please_enter">Please enter the movie name: </string>
+    <string name="button_message">Search For Movie</string>
 </resources>

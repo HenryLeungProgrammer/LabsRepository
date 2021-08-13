@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">电影搜索引擎</string>
+    <string name="please_enter">"请输入你想查询的电影： "</string>
+    <string name="button_message">查询</string>
+</resources>

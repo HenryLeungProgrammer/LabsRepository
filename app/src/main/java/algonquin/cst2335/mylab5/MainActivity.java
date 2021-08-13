@@ -1,6 +1,8 @@
 package algonquin.cst2335.mylab5;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.View;
@@ -58,11 +60,6 @@ public class MainActivity extends AppCompatActivity {
                     URL url = new URL(serverURL);
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                        // This converts to a String
-//                        text = (new BufferedReader(
-//                                new InputStreamReader(in, StandardCharsets.UTF_8)))
-//                                .lines()
-//                                .collect(Collectors.joining("\n"));
 
                         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                         //ignore namespace
@@ -149,6 +146,10 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+
     }
 
+
+
 }
+
