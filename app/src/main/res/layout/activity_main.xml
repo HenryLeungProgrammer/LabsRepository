@@ -140,20 +140,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button" />
 
-    <FrameLayout
-        android:id="@+id/fragmentRoom"
-        android:layout_width="404dp"
-        android:layout_height="65dp"
-        android:background="@color/clr_normal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
 
-        <Button
-            android:id="@+id/shop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button" />
-    </FrameLayout>
+    <Button
+        android:id="@+id/detailButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Movie Detail "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

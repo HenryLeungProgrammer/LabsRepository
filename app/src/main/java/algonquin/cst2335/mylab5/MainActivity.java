@@ -1,5 +1,6 @@
 package algonquin.cst2335.mylab5;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 // new classes stuff
 import org.xmlpull.v1.XmlPullParser;
@@ -35,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     String title, year, rating, runtime, mainActors, plot, URLofPoster;
+    Button detailButton;
+    String writer, country, director;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
                                    mainActors = xpp.getAttributeValue(null, "actors");
                                    plot = xpp.getAttributeValue(null, "plot");
                                    URLofPoster = xpp.getAttributeValue(null, "poster");
+                                   country = xpp.getAttributeValue(null, "country");
+                                   writer = xpp.getAttributeValue(null, "writer");
+                                   director = xpp.getAttributeValue(null, "director");
 
                                }
                                else if(xpp.getName().equals("weather")){
@@ -146,6 +153,22 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        Toast.makeText(getApplicationContext(), "Welcome!",
+                Toast.LENGTH_SHORT).show();
+        detailButton = findViewById(R.id.detailButton);
+        detailButton.setOnClickListener( click -> {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setTitle("Other Details");
+            //dialog.setIcon(R.drawable.dictation2_64);
+            dialog.setMessage("\n" + "Country: " + country + "\n\n" + "Director: " + director + "\n\n" + "Writer: " + writer);
+
+            // (3)设置dialog可否被取消
+            dialog.setCancelable(true);
+
+            // (4)显示出来
+            dialog.show();
+
+        });
 
     }
 
