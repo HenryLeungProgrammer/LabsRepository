@@ -139,68 +139,6 @@ public class MainActivity extends AppCompatActivity {
                         });
 
 
-//                        JSONObject theDocument = new JSONObject( text ); //this converts the String to JSON Object. The whole page!!
-//                        JSONObject main = theDocument.getJSONObject("main");
-//                        JSONArray weatherArray = theDocument.getJSONArray("weather");
-//                        JSONObject position0 = weatherArray.getJSONObject(0);
-//                        description = position0.getString("description");
-//                        String iconName = position0.getString("icon");
-//
-//                        currentTemp = main.getDouble("temp");
-//                        maxTemp = main.getDouble("temp_max");
-//                        minTemp = main.getDouble("temp_min");
-//                        humidi = main.getDouble("humidity");
-//                        String locationCity = et.getText().toString();
-//                        JSONObject sys = theDocument.getJSONObject("sys");
-//                        String locationCountry = sys.getString("country");
-//
-//                        Bitmap image;
-//                        File file = new File(getFilesDir(), iconName + ".png");
-//                        if(file.exists()){
-//                            image = BitmapFactory.decodeFile(getFilesDir() + "/" + iconName + ".png");
-//                        }
-//                        else {
-//                           URL imgUrl = new URL("https://openweathermap.org/img/w/" + iconName + ".png");
-//                            HttpURLConnection connection = (HttpURLConnection) imgUrl.openConnection();
-//                            connection.connect();
-//                            int responseCode = connection.getResponseCode();
-//                            if (responseCode == 200) {
-//                                image = BitmapFactory.decodeStream(connection.getInputStream());
-//                                image.compress(Bitmap.CompressFormat.PNG, 100, openFileOutput(iconName + ".png", Activity.MODE_PRIVATE));
-//                                runOnUiThread( (  )  -> {
-//                                ImageView iv = findViewById(R.id.icon);
-//                                iv.setImageBitmap(image);
-//                                iv.setVisibility(View.VISIBLE); });
-//                            }
-//                        }
-//
-//                        runOnUiThread( (  )  -> {
-//
-//                            TextView tv2 = findViewById(R.id.temp);
-//                            tv2.setText("The current temperature is: "  +  currentTemp );
-//                            tv2.setVisibility(View.VISIBLE);
-//
-//                            tv2 = findViewById(R.id.maxTemp);
-//                            tv2.setText("The Max temperature is: "  +  maxTemp );
-//                            tv2.setVisibility(View.VISIBLE);
-//
-//                            tv2 = findViewById(R.id.minTemp);
-//                            tv2.setText("The Min temperature is: "  + minTemp );
-//                            tv2.setVisibility(View.VISIBLE);
-//
-//                            tv2 = findViewById(R.id.humitidy);
-//                            tv2.setText("The humidity: "  +  humidi + "%");
-//                            tv2.setVisibility(View.VISIBLE);
-//
-//                            tv2 = findViewById(R.id.description);
-//                            tv2.setText(description );
-//                            tv2.setVisibility(View.VISIBLE);
-//
-//                            tv2 = findViewById(R.id.location);
-//                            tv2.setText(locationCity + " ," +  locationCountry);
-//                            tv2.setVisibility(View.VISIBLE);
-//                        });
-
                     } // try
 
                     catch (IOException | XmlPullParserException ex) {
